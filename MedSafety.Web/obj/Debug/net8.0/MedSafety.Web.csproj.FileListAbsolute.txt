@@ -70,3 +70,4 @@
 /Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Web/obj/Debug/net8.0/MedSafety.Web.pdb
 /Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Web/obj/Debug/net8.0/MedSafety.Web.genruntimeconfig.cache
 /Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Web/obj/Debug/net8.0/ref/MedSafety.Web.dll
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Web/obj/Debug/net8.0/MedSafety.Web.sourcelink.json

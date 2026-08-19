@@ -116,3 +116,4 @@
 /Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Tests/obj/Debug/net8.0/MedSafety.Tests.pdb
 /Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Tests/obj/Debug/net8.0/MedSafety.Tests.genruntimeconfig.cache
 /Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Tests/obj/Debug/net8.0/ref/MedSafety.Tests.dll
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Tests/obj/Debug/net8.0/MedSafety.Tests.sourcelink.json
