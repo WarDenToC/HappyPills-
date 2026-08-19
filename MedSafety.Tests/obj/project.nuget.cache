@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "dgSpecHash": "eHgQDH7GJaM=",
+  "success": true,
+  "projectFilePath": "/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Tests/MedSafety.Tests.csproj",
+  "expectedPackageFiles": [
+    "/Users/ballzj/.nuget/packages/castle.core/5.1.1/castle.core.5.1.1.nupkg.sha512",
+    "/Users/ballzj/.nuget/packages/coverlet.collector/6.0.0/coverlet.collector.6.0.0.nupkg.sha512",
+    "/Users/ballzj/.nuget/packages/microsoft.codecoverage/17.8.0/microsoft.codecoverage.17.8.0.nupkg.sha512",
+    "/Users/ballzj/.nuget/packages/microsoft.net.test.sdk/17.8.0/microsoft.net.test.sdk.17.8.0.nupkg.sha512",
+    "/Users/ballzj/.nuget/packages/microsoft.testplatform.objectmodel/17.8.0/microsoft.testplatform.objectmodel.17.8.0.nupkg.sha512",
+    "/Users/ballzj/.nuget/packages/microsoft.testplatform.testhost/17.8.0/microsoft.testplatform.testhost.17.8.0.nupkg.sha512",
+    "/Users/ballzj/.nuget/packages/moq/4.20.72/moq.4.20.72.nupkg.sha512",
+    "/Users/ballzj/.nuget/packages/mstest.testadapter/3.1.1/mstest.testadapter.3.1.1.nupkg.sha512",
+    "/Users/ballzj/.nuget/packages/mstest.testframework/3.1.1/mstest.testframework.3.1.1.nupkg.sha512",
+    "/Users/ballzj/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512",
+    "/Users/ballzj/.nuget/packages/nuget.frameworks/6.5.0/nuget.frameworks.6.5.0.nupkg.sha512",
+    "/Users/ballzj/.nuget/packages/system.diagnostics.eventlog/6.0.0/system.diagnostics.eventlog.6.0.0.nupkg.sha512",
+    "/Users/ballzj/.nuget/packages/system.reflection.metadata/1.6.0/system.reflection.metadata.1.6.0.nupkg.sha512"
+  ],
+  "logs": []
+}

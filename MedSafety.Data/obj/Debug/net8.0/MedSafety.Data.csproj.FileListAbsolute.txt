@@ -1,0 +1,15 @@
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/bin/Debug/net8.0/MedSafety.Data.deps.json
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/bin/Debug/net8.0/MedSafety.Data.dll
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/bin/Debug/net8.0/MedSafety.Data.pdb
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/bin/Debug/net8.0/MedSafety.Core.dll
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/bin/Debug/net8.0/MedSafety.Core.pdb
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/obj/Debug/net8.0/MedSafety.Data.csproj.AssemblyReference.cache
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/obj/Debug/net8.0/MedSafety.Data.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/obj/Debug/net8.0/MedSafety.Data.AssemblyInfoInputs.cache
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/obj/Debug/net8.0/MedSafety.Data.AssemblyInfo.cs
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/obj/Debug/net8.0/MedSafety.Data.csproj.CoreCompileInputs.cache
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/obj/Debug/net8.0/MedSafet.35B7633F.Up2Date
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/obj/Debug/net8.0/MedSafety.Data.dll
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/obj/Debug/net8.0/refint/MedSafety.Data.dll
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/obj/Debug/net8.0/MedSafety.Data.pdb
+/Users/ballzj/Library/Mobile Documents/com~apple~CloudDocs/MedSafety/MedSafety.Data/obj/Debug/net8.0/ref/MedSafety.Data.dll

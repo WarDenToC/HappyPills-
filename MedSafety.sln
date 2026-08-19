@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedSafety.Core", "MedSafety.Core\MedSafety.Core.csproj", "{A4CBC7A1-91F5-4879-A4E1-D5800B3FA99B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedSafety.Data", "MedSafety.Data\MedSafety.Data.csproj", "{FB9E1609-A718-4DE2-AE24-D6006469A342}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedSafety.Web", "MedSafety.Web\MedSafety.Web.csproj", "{233C1FE6-9A4D-4EDC-AF67-FA34AADA746B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedSafety.Tests", "MedSafety.Tests\MedSafety.Tests.csproj", "{22BD33CD-052C-4AEA-9739-E5CCCF268124}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A4CBC7A1-91F5-4879-A4E1-D5800B3FA99B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4CBC7A1-91F5-4879-A4E1-D5800B3FA99B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4CBC7A1-91F5-4879-A4E1-D5800B3FA99B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4CBC7A1-91F5-4879-A4E1-D5800B3FA99B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB9E1609-A718-4DE2-AE24-D6006469A342}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB9E1609-A718-4DE2-AE24-D6006469A342}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB9E1609-A718-4DE2-AE24-D6006469A342}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB9E1609-A718-4DE2-AE24-D6006469A342}.Release|Any CPU.Build.0 = Release|Any CPU
+		{233C1FE6-9A4D-4EDC-AF67-FA34AADA746B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{233C1FE6-9A4D-4EDC-AF67-FA34AADA746B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{233C1FE6-9A4D-4EDC-AF67-FA34AADA746B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{233C1FE6-9A4D-4EDC-AF67-FA34AADA746B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22BD33CD-052C-4AEA-9739-E5CCCF268124}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22BD33CD-052C-4AEA-9739-E5CCCF268124}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22BD33CD-052C-4AEA-9739-E5CCCF268124}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22BD33CD-052C-4AEA-9739-E5CCCF268124}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
