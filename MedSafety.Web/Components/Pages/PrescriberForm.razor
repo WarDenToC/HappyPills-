@@ -1,0 +1,80 @@
+@page "/prescriber"
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@using MedSafety.Core.Models
+@using MedSafety.Web.Models
+
+<PageTitle>New prescription — MedSafety</PageTitle>
+
+<h3>New prescription</h3>
+<p class="text-muted">All seven fields are required (FR1/FR2). Alerts shown below are a placeholder — real rule evaluation will connect to <code>SafetyChecker</code> once the rule implementations are in place.</p>
+
+<EditForm Model="@formModel" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label>Drug</label>
+        <InputText class="form-control" @bind-Value="formModel.DrugName" />
+    </div>
+    <div class="mb-2">
+        <label>Dose amount</label>
+        <InputText class="form-control" @bind-Value="formModel.DoseAmount" />
+    </div>
+    <div class="mb-2">
+        <label>Dose unit</label>
+        <InputSelect class="form-control" @bind-Value="formModel.DoseUnit">
+            <option value="mg">mg</option>
+            <option value="g">g</option>
+            <option value="ml">ml</option>
+        </InputSelect>
+    </div>
+    <div class="mb-2">
+        <label>Frequency</label>
+        <InputText class="form-control" @bind-Value="formModel.Frequency" />
+    </div>
+    <div class="mb-2">
+        <label>Route</label>
+        <InputText class="form-control" @bind-Value="formModel.Route" />
+    </div>
+    <div class="mb-2">
+        <label>Duration</label>
+        <InputText class="form-control" @bind-Value="formModel.Duration" />
+    </div>
+    <div class="mb-2">
+        <label>Patient's name</label>
+        <InputText class="form-control" @bind-Value="formModel.PatientName" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit prescription</button>
+</EditForm>
+
+@if (placeholderAlerts is not null)
+{
+    <div class="mt-4">
+        <h4>Safety check (placeholder)</h4>
+        @foreach (var alert in placeholderAlerts)
+        {
+            <div class="alert alert-warning">
+                <strong>@alert.RuleName (@alert.Severity)</strong>
+                <p class="mb-0">@alert.Reason</p>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private PrescriptionFormModel formModel = new();
+    private List<Alert>? placeholderAlerts;
+
+    private void HandleSubmit()
+    {
+        // TODO: replace with MedSafety.Core.SafetyChecker.RunChecks() once rule implementations land
+        placeholderAlerts = new List<Alert>
+        {
+            new("Dose range", Severity.Medium,
+                $"{formModel.DoseAmount}{formModel.DoseUnit}",
+                "Placeholder — real rule evaluation pending Core implementation.")
+        };
+    }
+}
