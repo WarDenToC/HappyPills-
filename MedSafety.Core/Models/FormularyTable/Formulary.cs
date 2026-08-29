@@ -28,7 +28,8 @@ public class Formulary
     {
         foreach (InteractionEntry interaction in Interactions)
         {
-            if ( interaction.DrugA.ToLower() == a.ToLower() && interaction.DrugB.ToLower() == b.ToLower())
+            if ((interaction.DrugA.ToLower() == a.ToLower() && interaction.DrugB.ToLower() == b.ToLower()) ||
+                (interaction.DrugA.ToLower() == b.ToLower() && interaction.DrugB.ToLower() == a.ToLower()))
             {
                 return interaction;
             }
