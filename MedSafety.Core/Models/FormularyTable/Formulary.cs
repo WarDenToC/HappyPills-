@@ -14,6 +14,7 @@ public class Formulary
         Interactions = interactions;
     }
 
+    //FindEntry: used to find if a prescribed drug is within the list of drug within data.
     public DrugEntry? FindEntry(string drugName)
     {
         foreach (DrugEntry entry in Entries)
@@ -24,6 +25,7 @@ public class Formulary
         return null;
     }
 
+    //Used to check drugA to drugB or vice versa, if two drugs have clashes
     public InteractionEntry? FindInteraction(string a, string b)
     {
         foreach (InteractionEntry interaction in Interactions)

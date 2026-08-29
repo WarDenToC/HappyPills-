@@ -18,9 +18,10 @@ public class DoseRangeRule : INterfacePrescriptionRule
 
         if (prescription.DoseAmount < entry.MinDose)
         {
-            Alert underDose = new Alert(Severity.Low, Type, $"Dose {prescription.DoseAmount}{prescription.DoseUnit} " +
-                                                                $"is below the required dose of " +
-                                                                $"{entry.MinDose}{entry.DoseUnit}");
+            Alert underDose = new Alert(Severity.Low, Type, 
+                $"Dose {prescription.DoseAmount}{prescription.DoseUnit} " +
+                $"is below the required dose of " +
+                $"{entry.MinDose}{entry.DoseUnit}");
             alerts.Add(underDose);
         }
 

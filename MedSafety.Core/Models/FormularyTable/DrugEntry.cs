@@ -4,6 +4,7 @@ namespace MedSafety.Core.Models.FormularyTable;
 
 public class DrugEntry
 {
+    // This 
     public int ID { get; set; }
     public string DrugName { get; set; }
     public DrugClass DrugClass  { get; set; }
