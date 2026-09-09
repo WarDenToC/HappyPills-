@@ -8,6 +8,6 @@ public class InteractionEntry
     //Used by Formulary to check if any two types of drugs have clashes.
     public int Id { get; set; }
     public string DrugA { get; set; }
-    public string DrugB {get;set;}
+    public string DrugB {get; set;}
     public Severity Severity { get; set; }
 }
