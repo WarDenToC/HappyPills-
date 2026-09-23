@@ -6,7 +6,7 @@ namespace MedSafety.Core.Rules;
 
 public class AllergyRule : INterfacePrescriptionRule
 {
-   public RuleType Type => RuleType.DoseRange;
+   public RuleType Type => RuleType.Allergies;
    public IEnumerable<Alert> Check(Prescription prescription, PatientContext patientContext, Formulary formulary)
    {
       List<Alert> alerts = new List<Alert>();
@@ -15,9 +15,20 @@ public class AllergyRule : INterfacePrescriptionRule
       if (entry == null)
          return alerts;
 
+      if (patientContext.DrugAllergies.Contains(entry.DrugName))
+      {
+         Alert drugAllergies = new Alert(Severity.Critical, Type,
+            $"Patient has an allergy to the drug named {entry.DrugName}");
+         alerts.Add(drugAllergies);
+      }
 
-
-
+      if(patientContext.ClassAllergies.Contains(entry.DrugClass.ToString()))
+      {
+         Alert classAllergies = new Alert(Severity.Critical, Type,
+            $"Patient has an allergy to the class of drug: {entry.DrugClass}");
+         alerts.Add(classAllergies);
+      }
+      
       return alerts;
    }
    
