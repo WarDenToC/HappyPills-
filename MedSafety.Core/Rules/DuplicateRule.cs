@@ -3,13 +3,14 @@ namespace MedSafety.Core.Rules;
 using MedSafety.Core.Enum;
 using MedSafety.Core.Models;
 using MedSafety.Core.Models.FormularyTable;
+using TypedFormulary = MedSafety.Core.Models.FormularyTable.Formulary;
 
 
 public class DuplicateRule : INterfacePrescriptionRule
 {
     public RuleType Type =>  RuleType.Duplicate;
 
-    public IEnumerable<Alert> Check(Prescription prescription, PatientContext patientContext, Formulary formulary)
+    public IEnumerable<Alert> Check(Prescription prescription, PatientContext patientContext, TypedFormulary formulary)
     {
         List<Alert> alerts = new List<Alert>();
         var entry = formulary.FindEntry(prescription.DrugName);
@@ -19,7 +20,7 @@ public class DuplicateRule : INterfacePrescriptionRule
 
         if (patientContext.ActiveMeds.Contains(prescription.DrugName))
         {
-            Alert Duplicatemeds = new Alert(Severity.Medium, Type,
+            Alert Duplicatemeds = new Alert(MedSafety.Core.Enum.Severity.Medium, Type,
                 $"Patient already has a drug of the same active class {entry.DrugClass}");
         }
 
