@@ -2,7 +2,6 @@ using MedSafety.Core.Enum;
 using MedSafety.Core.Models;
 using MedSafety.Core.Models.FormularyTable;
 
-
 namespace MedSafety.Core.Rules;
 
 public class DoseRangeRule : INterfacePrescriptionRule
