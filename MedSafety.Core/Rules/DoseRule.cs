@@ -15,6 +15,15 @@ public class DoseRangeRule : INterfacePrescriptionRule
         if (entry == null)
             return alerts;
 
+        if (prescription.DoseUnit != entry.DoseUnit)
+        {
+            Alert unitMismatch = new Alert(Severity.Critical, Type,
+                $"Dose unit {prescription.DoseUnit} does not match formulary unit " +
+                $"{entry.DoseUnit} for {entry.DrugName}; dose cannot be checked");
+            alerts.Add(unitMismatch);
+            return alerts;
+        }
+        
         if (prescription.DoseAmount < entry.MinDose)
         {
             Alert underDose = new Alert(Severity.Low, Type, 
@@ -24,7 +33,7 @@ public class DoseRangeRule : INterfacePrescriptionRule
             alerts.Add(underDose);
         }
 
-        if (prescription.DoseAmount > entry.MaxDose)
+        else if (prescription.DoseAmount > entry.MaxDose)
         {
             Alert overDose = new Alert(Severity.Critical, Type,
                 $"Dose {prescription.DoseAmount}{prescription.DoseUnit} " +

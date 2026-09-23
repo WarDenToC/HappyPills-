@@ -14,13 +14,29 @@ public class DuplicateRule : INterfacePrescriptionRule
         List<Alert> alerts = new List<Alert>();
         var entry = formulary.FindEntry(prescription.DrugName);
         
-        if(entry == null)
+        if (entry == null)
             return alerts;
-
-        if (patientContext.ActiveMeds.Contains(prescription.DrugName))
+        
+        foreach (string activeMed in patientContext.ActiveMeds)
         {
-            Alert Duplicatemeds = new Alert(Severity.Medium, Type,
-                $"Patient already has a drug of the same active class {entry.DrugClass}");
+            var activeEntry = formulary.FindEntry(activeMed);
+            
+            if (activeEntry == null)
+                continue;
+            
+            if (entry.DrugName.Equals(activeEntry.DrugName))
+            {
+                Alert duplicateDrug = new Alert(Severity.Medium, Type,
+                    $"Patient already has the same active drug of {activeEntry.DrugName}");
+                alerts.Add(duplicateDrug);
+            }
+
+            else if (entry.DrugClass.Equals(activeEntry.DrugClass))
+            {
+                Alert duplicateClass = new Alert(Severity.Low, Type,
+                    $"Patient already has the same active drug class of {activeEntry.DrugName}");
+                alerts.Add(duplicateClass);
+            }
         }
 
         return alerts;
