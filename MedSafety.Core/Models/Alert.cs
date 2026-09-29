@@ -2,31 +2,24 @@ using MedSafety.Core.Enum;
 
 namespace MedSafety.Core.Models;
 
-// FR8: every alert must state which rule fired, the values involved, and a human-readable reason
 public class Alert
 {
-    public string RuleName { get; }
-    public Severity Severity { get; }
-    public string ViolatedValues { get; }
-    public string Reason { get; }
-    public RuleType? RuleType { get; }
-    public string Message => Reason;
-    public string? RelatedDrug { get; set; }
+    /*
+     * All alerts must have the severity that they get that from the Enum Severity
+     * Then it must alert what type of rules is being violated from the list of rules from Enum
+     * Then finally it will print message of what values or any type of variables that's being violated
+     */ 
+    public Severity Severity { get; set; }
+    public RuleType RuleType { get; set; }
+    public string Message { get; set; }
+    
+    public string? RelatedDrug  { get; set; } //currently not implemented but will be used for interaction clash or duplicate drug rules
 
-    public Alert(string ruleName, Severity severity, string violatedValues, string reason)
+    public Alert(Severity severity, RuleType ruleType, string message)
     {
-        RuleName = ruleName;
-        Severity = severity;
-        ViolatedValues = violatedValues;
-        Reason = reason;
+        this.Severity = severity;
+        this.RuleType = ruleType;
+        this.Message = message;
     }
 
-    public Alert(MedSafety.Core.Enum.Severity severity, RuleType ruleType, string message)
-    {
-        RuleName = ruleType.ToString();
-        Severity = (Severity)(int)severity;
-        ViolatedValues = string.Empty;
-        Reason = message;
-        RuleType = ruleType;
-    }
 }

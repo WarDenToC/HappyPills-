@@ -5,11 +5,11 @@ using MedSafety.Core.Models;
 using MedSafety.Core.Models.FormularyTable;
 
 
-public class DuplicateRule : INterfacePrescriptionRule
+public class DuplicateRule : IPrescriptionRule
 {
     public RuleType Type =>  RuleType.Duplicate;
-    
-    public IEnumerable<Alert> Check(Prescription prescription, PatientContext patientContext, Formulary formulary)
+
+    public IEnumerable<Alert> Evaluate(Prescription prescription, PatientContext patient, Formulary formulary)
     {
         List<Alert> alerts = new List<Alert>();
         var entry = formulary.FindEntry(prescription.DrugName);
@@ -17,7 +17,7 @@ public class DuplicateRule : INterfacePrescriptionRule
         if (entry == null)
             return alerts;
         
-        foreach (string activeMed in patientContext.ActiveMeds)
+        foreach (string activeMed in patient.ActiveMeds)
         {
             var activeEntry = formulary.FindEntry(activeMed);
             

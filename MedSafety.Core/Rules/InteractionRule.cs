@@ -3,14 +3,14 @@ using MedSafety.Core.Enum;
 using MedSafety.Core.Models;
 using MedSafety.Core.Models.FormularyTable;
 
-public class InteractionRule : INterfacePrescriptionRule
+public class InteractionRule : IPrescriptionRule
 {
     public RuleType Type => RuleType.Interaction;
 
-    public IEnumerable<Alert> Check(Prescription prescription, PatientContext patientContext, Formulary formulary)
+    public IEnumerable<Alert> Evaluate(Prescription prescription, PatientContext patient, Formulary formulary)
     {
         List<Alert> alerts = new List<Alert>();
-        foreach (string activeMed in patientContext.ActiveMeds)
+        foreach (string activeMed in patient.ActiveMeds)
         {
             var entry = formulary.FindInteraction(prescription.DrugName, activeMed);
             if (entry != null)

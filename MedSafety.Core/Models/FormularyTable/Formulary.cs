@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using MedSafety.Core.Enum;
 
 namespace MedSafety.Core.Models.FormularyTable;
@@ -8,6 +7,8 @@ public class Formulary
     public IReadOnlyList<DrugEntry> Entries { get; }
     public IReadOnlyList<InteractionEntry> Interactions { get; }
 
+    public Formulary() : this(new List<DrugEntry>(), new List<InteractionEntry>()) { }
+    
     public Formulary(IReadOnlyList<DrugEntry> entries, IReadOnlyList<InteractionEntry> interactions)
     {
         Entries = entries;

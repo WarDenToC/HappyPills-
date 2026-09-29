@@ -1,34 +1,29 @@
+using MedSafety.Core.Enum;
+
 namespace MedSafety.Core.Models;
 
-// FR1: the 7 mandatory fields, with typed formulary data available when needed.
 public class Prescription
 {
-    public PatientContext? PatientContext { get; set; }
+    public int PatientId { get; set; }
     public string DrugName { get; set; } = string.Empty;
-    public double DoseAmount { get; set; }
-    public string DoseUnit { get; set; } = string.Empty;
-    public string Frequency { get; set; } = string.Empty;
+    public DoseUnit DoseUnit { get; set; }
+    public decimal DoseAmount { get; set; }
+    public int Frequency { get; set; }          // times per day
     public string Route { get; set; } = string.Empty;
     public string Duration { get; set; } = string.Empty;
-    public string PatientName { get; set; } = string.Empty;
 
-    public Prescription()
-    {
-    }
+    // Needed by tests (new Prescription()) and the Blazor form
+    public Prescription() { }
 
-    public Prescription(
-        PatientContext patientContext,
-        string drugName,
-        MedSafety.Core.Enum.DoseUnit doseUnit,
-        int doseAmount,
-        int frequency,
-        string duration)
+    public Prescription(int patientId, string drugName, DoseUnit doseUnit,
+        decimal doseAmount, int frequency, string route, string duration)
     {
-        PatientContext = patientContext;
+        PatientId = patientId;
         DrugName = drugName;
-        DoseUnit = doseUnit.ToString();
+        DoseUnit = doseUnit;
         DoseAmount = doseAmount;
-        Frequency = frequency.ToString();
+        Frequency = frequency;
+        Route = route;
         Duration = duration;
     }
 }

@@ -1,10 +1,12 @@
+using MedSafety.Core.Enum;
 using MedSafety.Core.Models;
+using MedSafety.Core.Models.FormularyTable;
 
 namespace MedSafety.Core.Rules;
 
-// NFR7: new rules are added by implementing this interface, without touching existing rules
+
 public interface IPrescriptionRule
 {
-    string Name { get; }
+    RuleType Type { get; }
     IEnumerable<Alert> Evaluate(Prescription prescription, PatientContext patient, Formulary formulary);
 }

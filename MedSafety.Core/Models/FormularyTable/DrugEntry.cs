@@ -10,16 +10,16 @@ public class DrugEntry
     public DrugClass DrugClass  { get; set; }
     public DoseUnit DoseUnit { get; set; }
 
-    public int MaxDose { get; set; }
-    public int MinDose { get; set; }
+    public decimal MaxDose { get; set; }
+    public decimal MinDose { get; set; }
 
-    public DrugEntry(int id,DrugClass drugClass, string drugName, DoseUnit doseUnit, int maxDose, int minDose)
+    public DrugEntry(int id, string drugName, DrugClass drugClass, DoseUnit doseUnit, decimal minDose, decimal maxDose)
     {
-        this.ID = id;
-        this.DrugClass = drugClass;
-        this.DrugName = drugName;
-        this.DoseUnit = doseUnit;
-        this.MaxDose = maxDose;
-        this.MinDose = minDose;
+        ID = id;
+        DrugName = drugName;
+        DrugClass = drugClass;
+        DoseUnit = doseUnit;
+        MinDose = minDose;
+        MaxDose = maxDose;
     }
 }

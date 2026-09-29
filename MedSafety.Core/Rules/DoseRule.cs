@@ -4,10 +4,10 @@ using MedSafety.Core.Models.FormularyTable;
 
 namespace MedSafety.Core.Rules;
 
-public class DoseRangeRule : INterfacePrescriptionRule
+public class DoseRangeRule : IPrescriptionRule
 {
     public RuleType Type =>  RuleType.DoseRange;
-    public IEnumerable<Alert> Check(Prescription prescription, PatientContext patientContext, Formulary formulary)
+    public IEnumerable<Alert> Evaluate(Prescription prescription, PatientContext patient, Formulary formulary)
     {
         List<Alert> alerts = new List<Alert>();
         var entry = formulary.FindEntry(prescription.DrugName);

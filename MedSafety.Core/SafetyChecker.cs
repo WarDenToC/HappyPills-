@@ -1,7 +1,9 @@
 using MedSafety.Core.Models;
 using MedSafety.Core.Rules;
-
+using MedSafety.Core.Enum;
+using MedSafety.Core.Models.FormularyTable;
 namespace MedSafety.Core;
+
 
 public class SafetyCheckResult
 {

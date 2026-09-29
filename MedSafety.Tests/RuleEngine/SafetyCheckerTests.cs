@@ -4,6 +4,9 @@ using MedSafety.Core.Rules;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
+using MedSafety.Core.Enum;
+using MedSafety.Core.Models.FormularyTable;
+
 namespace MedSafety.Tests.RuleEngine;
 
 [TestClass]
@@ -31,12 +34,12 @@ public class SafetyCheckerTests
         var lowRule = new Mock<IPrescriptionRule>();
         lowRule.Setup(r => r.Evaluate(
                 It.IsAny<Prescription>(), It.IsAny<PatientContext>(), It.IsAny<Formulary>()))
-            .Returns(new List<Alert> { new("LowRule", Severity.Low, "n/a", "low severity issue") });
+            .Returns(new List<Alert> { new(Severity.Low, RuleType.DoseRange, "low severity issue") });
 
         var criticalRule = new Mock<IPrescriptionRule>();
         criticalRule.Setup(r => r.Evaluate(
                 It.IsAny<Prescription>(), It.IsAny<PatientContext>(), It.IsAny<Formulary>()))
-            .Returns(new List<Alert> { new("CriticalRule", Severity.Critical, "n/a", "critical severity issue") });
+            .Returns(new List<Alert> { new(Severity.Critical, RuleType.Allergies, "critical severity issue") });
 
         var checker = new SafetyChecker(new[] { lowRule.Object, criticalRule.Object });
 
@@ -53,12 +56,12 @@ public class SafetyCheckerTests
         var ruleA = new Mock<IPrescriptionRule>();
         ruleA.Setup(r => r.Evaluate(
                 It.IsAny<Prescription>(), It.IsAny<PatientContext>(), It.IsAny<Formulary>()))
-            .Returns(new List<Alert> { new("RuleA", Severity.Critical, "n/a", "reason A") });
+            .Returns(new List<Alert> { new(Severity.Critical, RuleType.Allergies, "reason A") });
 
         var ruleB = new Mock<IPrescriptionRule>();
         ruleB.Setup(r => r.Evaluate(
                 It.IsAny<Prescription>(), It.IsAny<PatientContext>(), It.IsAny<Formulary>()))
-            .Returns(new List<Alert> { new("RuleB", Severity.Low, "n/a", "reason B") });
+            .Returns(new List<Alert> { new(Severity.Low, RuleType.Interaction, "reason B") });
 
         var checker = new SafetyChecker(new[] { ruleA.Object, ruleB.Object });
 

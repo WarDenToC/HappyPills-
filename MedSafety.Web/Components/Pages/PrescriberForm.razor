@@ -3,6 +3,7 @@
 @using System.ComponentModel.DataAnnotations
 @using MedSafety.Core.Models
 @using MedSafety.Web.Models
+@using MedSafety.Core.Enum
 
 <PageTitle>New prescription — MedSafety</PageTitle>
 
@@ -56,8 +57,8 @@
         @foreach (var alert in placeholderAlerts)
         {
             <div class="alert alert-warning">
-                <strong>@alert.RuleName (@alert.Severity)</strong>
-                <p class="mb-0">@alert.Reason</p>
+                <strong>@alert.RuleType (@alert.Severity)</strong>
+                <p class="mb-0">@alert.Message</p>
             </div>
         }
     </div>
@@ -72,9 +73,8 @@
         // TODO: replace with MedSafety.Core.SafetyChecker.RunChecks() once rule implementations land
         placeholderAlerts = new List<Alert>
         {
-            new("Dose range", Severity.Medium,
-                $"{formModel.DoseAmount}{formModel.DoseUnit}",
-                "Placeholder — real rule evaluation pending Core implementation.")
+            new(Severity.Medium, RuleType.DoseRange,
+                $"{formModel.DoseAmount}{formModel.DoseUnit}: placeholder, real rule evaluation pending.")
         };
     }
 }

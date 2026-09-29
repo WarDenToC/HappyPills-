@@ -1,39 +1,37 @@
 using MedSafety.Core.Enum;
 using MedSafety.Core.Models;
 using MedSafety.Core.Models.FormularyTable;
-using TypedFormulary = MedSafety.Core.Models.FormularyTable.Formulary;
 
 namespace MedSafety.Core.Rules;
 
-public class AllergyRule : INterfacePrescriptionRule
+public class AllergyRule : IPrescriptionRule
 {
-   public RuleType Type => RuleType.Allergies;
-   public IEnumerable<Alert> Check(Prescription prescription, PatientContext patientContext, TypedFormulary formulary)
-   {
-      List<Alert> alerts = new List<Alert>();
-      var entry = formulary.FindEntry(prescription.DrugName);
+    public RuleType Type => RuleType.Allergies;
 
-      if (entry == null)
-         return alerts;
+    public IEnumerable<Alert> Evaluate(Prescription prescription, PatientContext patient, Formulary formulary)
+    {
+        List<Alert> alerts = new List<Alert>();
+        var entry = formulary.FindEntry(prescription.DrugName);
 
-      if (patientContext.DrugAllergies.Contains(entry.DrugName))
-      {
-         Alert drugAllergies = new Alert(MedSafety.Core.Enum.Severity.Critical, Type,
-            $"Patient has an allergy to the drug named {entry.DrugName}");
-         alerts.Add(drugAllergies);
-      }
+        if (entry == null)
+            return alerts;
 
-      if(patientContext.ClassAllergies.Contains(entry.DrugClass.ToString()))
-      {
-         Alert classAllergies = new Alert(MedSafety.Core.Enum.Severity.Critical, Type,
-            $"Patient has an allergy to the class of drug: {entry.DrugClass}");
-         alerts.Add(classAllergies);
-      }
+        if (patient.DrugAllergies.Contains(entry.DrugName))
+        {
+            Alert drugAllergies = new Alert(Severity.Critical, Type,
+                $"Patient has an allergy to the drug named {entry.DrugName}");
+            alerts.Add(drugAllergies);
+        }
 
-      return alerts;
-   }
+        if (patient.ClassAllergies.Contains(entry.DrugClass.ToString()))
+        {
+            Alert classAllergies = new Alert(Severity.Critical, Type,
+                $"Patient has an allergy to the class of drug: {entry.DrugClass}");
+            alerts.Add(classAllergies);
+        }
 
-
+        return alerts;
+    }
 }
 
 /*
