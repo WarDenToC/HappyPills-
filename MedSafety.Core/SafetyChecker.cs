@@ -9,11 +9,15 @@ public class SafetyCheckResult
 {
     public IReadOnlyList<Alert> Alerts { get; }
     public Severity Outcome { get; }
+    public IReadOnlyList<string> ValidationErrors { get; }
+    public bool IsValid => ValidationErrors.Count == 0;
 
-    public SafetyCheckResult(IReadOnlyList<Alert> alerts, Severity outcome)
+    public SafetyCheckResult(IReadOnlyList<Alert> alerts, Severity outcome,
+        IReadOnlyList<string>? validationErrors = null)
     {
         Alerts = alerts;
         Outcome = outcome;
+        ValidationErrors = validationErrors ?? new List<string>();
     }
 }
 
