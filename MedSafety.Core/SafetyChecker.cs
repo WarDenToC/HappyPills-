@@ -9,6 +9,7 @@ public class SafetyCheckResult
 {
     public IReadOnlyList<Alert> Alerts { get; }
     public Severity Outcome { get; }
+    public bool IsValid { get; } = true; // TODO (Issue #2): not yet tied to whether the drug exists in the formulary
 
     public SafetyCheckResult(IReadOnlyList<Alert> alerts, Severity outcome)
     {
