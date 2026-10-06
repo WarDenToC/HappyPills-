@@ -47,6 +47,7 @@ public class SafetyCheckerTests
         var rx = new Prescription(1, "Betanol", DoseUnit.Mg, 50, 1, "Oral", "7 days");
         var result = BuildChecker().RunChecks(rx, CleanPatient(), BuildFormulary());
 
+        Assert.IsTrue(result.IsValid);
         Assert.AreEqual(Severity.None, result.Outcome);
         Assert.AreEqual(0, result.Alerts.Count);
     }

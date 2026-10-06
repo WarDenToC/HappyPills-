@@ -7,8 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MedSafety.Tests.RuleEngine;
 
-// These tests document known gaps (see COPILOT-LOG.md / defect log D-02, D-03).
-// They are EXPECTED TO FAIL until the corresponding Core fix lands — do not "fix" the test to pass.
+// Regression tests for previously known gaps (see COPILOT-LOG.md / defect log D-02, D-03).
 [TestClass]
 public class KnownDefectsTests
 {
@@ -24,8 +23,7 @@ public class KnownDefectsTests
     [TestMethod]
     public void Issue1_Allergy_CaseInsensitiveMatch_ShouldRaiseCriticalAlert()
     {
-        // FR4 requires case-insensitive matching. AllergyRule currently uses Contains(),
-        // which is case-sensitive — "alphacillin" (stored) vs "Alphacillin" (prescribed) won't match.
+        // FR4 requires case-insensitive matching: "alphacillin" vs "Alphacillin".
         var patient = new PatientContext(1, "Test", "Patient",
             new List<string> { "alphacillin" }, new List<string>(), new List<string>());
         var rx = new Prescription(1, "Alphacillin", DoseUnit.Mg, 300, 1, "Oral", "7 days");
@@ -39,8 +37,7 @@ public class KnownDefectsTests
     [TestMethod]
     public void Issue2_UnknownDrug_ThroughSafetyChecker_ShouldBeInvalidWithNoAlerts()
     {
-        // SafetyChecker has no concept yet of "this drug isn't in the formulary at all" —
-        // IsValid is currently hardcoded true regardless of input.
+        // Unknown drugs are invalid and rules should not run against them.
         var rx = new Prescription(1, "PTY1", DoseUnit.Mg, 100, 1, "Oral", "7 days");
         var patient = new PatientContext(1, "Test", "Patient", new(), new(), new());
 
