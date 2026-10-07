@@ -11,7 +11,7 @@ public class SafetyCheckResult
     public Severity Outcome { get; }
     public bool IsValid { get; }
 
-    public SafetyCheckResult(IReadOnlyList<Alert> alerts, Severity outcome, bool isValid)
+    public SafetyCheckResult(IReadOnlyList<Alert> alerts, Severity outcome, bool isValid = true)
     {
         Alerts = alerts;
         Outcome = outcome;
