@@ -30,6 +30,16 @@ public static class PrescriptionValidator
         {
             errors.Add($"Unknown drug: {rx.DrugName}");
         }
+        
+        if (rx.Frequency <= 0)
+        {
+            errors.Add("Frequency must be at least once per day.");
+        }
+
+        if (string.IsNullOrWhiteSpace(rx.Duration))
+        {
+            errors.Add("Duration is required.");
+        }
 
         return errors;
     }
