@@ -1,13 +1,30 @@
+using MedSafety.Core.Audit;
+using MedSafety.Core.Security;
+using MedSafety.Data;
 using MedSafety.Web.Components;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddSingleton<MedSafety.Web.Services.PrescriptionStore>();
+
+// SQLite data layer: formulary, patients and audit log are stored in medsafety.db
+builder.Services.AddDbContextFactory<MedSafetyDbContext>(o => o.UseSqlite("Data Source=medsafety.db"));
+builder.Services.AddSingleton<SqliteReferenceData>();
+builder.Services.AddSingleton<IAuditLog, SqliteAuditLog>();
+builder.Services.AddSingleton<AuthorizationService>();
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 var app = builder.Build();
+
+// Create and seed medsafety.db on first start
+using (var db = app.Services.GetRequiredService<IDbContextFactory<MedSafetyDbContext>>().CreateDbContext())
+{
+    DatabaseSeeder.EnsureSeeded(db);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
