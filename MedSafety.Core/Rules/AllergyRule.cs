@@ -16,14 +16,16 @@ public class AllergyRule : IPrescriptionRule
         if (entry == null)
             return alerts;
 
-        if (patient.DrugAllergies.Contains(entry.DrugName))
+        if (patient.DrugAllergies.Any(allergy =>
+                string.Equals(allergy, entry.DrugName, StringComparison.OrdinalIgnoreCase)))
         {
             Alert drugAllergies = new Alert(Severity.Critical, Type,
                 $"Patient has an allergy to the drug named {entry.DrugName}");
             alerts.Add(drugAllergies);
         }
 
-        if (patient.ClassAllergies.Contains(entry.DrugClass.ToString()))
+        if (patient.ClassAllergies.Any(allergy =>
+                string.Equals(allergy, entry.DrugClass.ToString(), StringComparison.OrdinalIgnoreCase)))
         {
             Alert classAllergies = new Alert(Severity.Critical, Type,
                 $"Patient has an allergy to the class of drug: {entry.DrugClass}");

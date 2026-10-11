@@ -3,50 +3,44 @@ using MedSafety.Core.Models.FormularyTable;
 
 namespace MedSafety.Core;
 
-// FR2: reject incomplete or invalid prescriptions before any rule runs
+// Partial FR2 validator — currently covers drug name, dose amount, route, and formulary existence.
+// Does not yet validate dose unit, frequency, duration, or patient fields.
 public static class PrescriptionValidator
 {
-    public static List<string> Validate(Prescription prescription, Formulary formulary)
+    public static List<string> Validate(Prescription rx, Formulary formulary)
     {
         var errors = new List<string>();
-        var entry = formulary.FindEntry(prescription.DrugName);
-        // TODO (Amrith): drug name, route, duration not empty; dose > 0; frequency > 0; drug exists in formulary
 
-        if (string.IsNullOrWhiteSpace(prescription.DrugName))
+        if (string.IsNullOrWhiteSpace(rx.DrugName))
         {
-            String emptyName = "Drug name is required.";
-            errors.Add(emptyName);
-        }
-        else if (formulary.FindEntry(prescription.DrugName) == null)
-        {
-            String drugNonExist = $"Drug '{prescription.DrugName}' was not found in the formulary.";
-            errors.Add(drugNonExist);
+            errors.Add("Drug name is required.");
         }
 
-        if (string.IsNullOrWhiteSpace(prescription.Route))
+        if (rx.DoseAmount <= 0)
         {
-            String emptyRoute = "Please ensure that this field of intake route is filled";
-            errors.Add(emptyRoute);
+            errors.Add($"Dose amount must be greater than zero (was {rx.DoseAmount}).");
         }
 
-        if (string.IsNullOrWhiteSpace(prescription.Duration))
+        if (string.IsNullOrWhiteSpace(rx.Route))
         {
-            String emptyDuration = "Please ensure that the duration of prescription is filled";
-            errors.Add(emptyDuration);
+            errors.Add("Route is required.");
         }
 
-        if (prescription.DoseAmount <= 0)
+        if (!string.IsNullOrWhiteSpace(rx.DrugName) && formulary.FindEntry(rx.DrugName) == null)
         {
-            String zeroDoseAmount = "Please ensure that the dose amount is greater than zero";
-            errors.Add(zeroDoseAmount);
-        }
-
-        if (prescription.Frequency <= 0)
-        {
-            String zeroFrequency = "Please ensure that the frequency is filled and is greater than zero";
-            errors.Add(zeroFrequency);
+            errors.Add($"Unknown drug: {rx.DrugName}");
         }
         
+        if (rx.Frequency <= 0)
+        {
+            errors.Add("Frequency must be at least once per day.");
+        }
+
+        if (string.IsNullOrWhiteSpace(rx.Duration))
+        {
+            errors.Add("Duration is required.");
+        }
+
         return errors;
     }
 }

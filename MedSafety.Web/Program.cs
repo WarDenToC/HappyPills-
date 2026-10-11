@@ -3,6 +3,7 @@ using MedSafety.Web.Components;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddSingleton<MedSafety.Web.Services.PrescriptionStore>();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 

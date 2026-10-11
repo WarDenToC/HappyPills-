@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\MedSafety.Core\MedSafety.Core.csproj" />
+      <ProjectReference Include="..\MedSafety.Web\MedSafety.Web.csproj" />
     </ItemGroup>
 
 </Project>

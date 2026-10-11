@@ -9,15 +9,13 @@ public class SafetyCheckResult
 {
     public IReadOnlyList<Alert> Alerts { get; }
     public Severity Outcome { get; }
-    public IReadOnlyList<string> ValidationErrors { get; }
-    public bool IsValid => ValidationErrors.Count == 0;
+    public bool IsValid { get; }
 
-    public SafetyCheckResult(IReadOnlyList<Alert> alerts, Severity outcome,
-        IReadOnlyList<string>? validationErrors = null)
+    public SafetyCheckResult(IReadOnlyList<Alert> alerts, Severity outcome, bool isValid = true)
     {
         Alerts = alerts;
         Outcome = outcome;
-        ValidationErrors = validationErrors ?? new List<string>();
+        IsValid = isValid;
     }
 }
 
@@ -34,6 +32,11 @@ public class SafetyChecker
 
     public SafetyCheckResult RunChecks(Prescription prescription, PatientContext patient, Formulary formulary)
     {
+        if (formulary.FindEntry(prescription.DrugName) == null)
+        {
+            return new SafetyCheckResult(Array.Empty<Alert>(), Severity.None, isValid: false);
+        }
+
         var allAlerts = new List<Alert>();
 
         foreach (var rule in _rules)
@@ -49,6 +52,6 @@ public class SafetyChecker
             ? allAlerts.Max(a => a.Severity)
             : Severity.None;
 
-        return new SafetyCheckResult(allAlerts, outcome);
+        return new SafetyCheckResult(allAlerts, outcome, isValid: true);
     }
 }
