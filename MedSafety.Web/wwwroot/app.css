@@ -49,3 +49,20 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+.synthetic-banner {
+    background-color: #fff3cd;
+    border-bottom: 1px solid #e0c36a;
+    color: #664d03;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.9rem;
+}
+
+.role-switcher {
+    display: flex;
+    align-items: center;
+}
+
+.role-switcher select {
+    width: auto;
+}

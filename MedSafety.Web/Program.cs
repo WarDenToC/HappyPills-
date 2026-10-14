@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddScoped<MedSafety.Web.Services.CurrentUser>();
 builder.Services.AddSingleton<MedSafety.Web.Services.PrescriptionStore>();
 
 // SQLite data layer: formulary, patients and audit log are stored in medsafety.db

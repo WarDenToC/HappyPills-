@@ -9,12 +9,17 @@
     <link rel="stylesheet" href="app.css"/>
     <link rel="stylesheet" href="MedSafety.Web.styles.css"/>
     <link rel="icon" type="image/png" href="favicon.png"/>
-    <HeadOutlet/>
+    <HeadOutlet @rendermode="RenderModeNoPrerender"/>
 </head>
 
 <body>
-<Routes/>
+<Routes @rendermode="RenderModeNoPrerender"/>
 <script src="_framework/blazor.web.js"></script>
 </body>
 
 </html>
+
+@code {
+    private static readonly IComponentRenderMode RenderModeNoPrerender =
+        new InteractiveServerRenderMode(prerender: false);
+}

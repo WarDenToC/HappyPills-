@@ -1,7 +1,23 @@
 ﻿@page "/"
+@implements IDisposable
+@inject CurrentUser User
 
-<PageTitle>Home</PageTitle>
+<PageTitle>MedSafety</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>MedSafety</h1>
+<p class="lead">Prescription safety checking and pharmacist review, as a prototype on synthetic data.</p>
 
-Welcome to your new app.
+<p>You are acting as <strong>@User.Role</strong> (@User.Name). Use the selector at the top right to switch roles.</p>
+
+<ul>
+    <li><NavLink href="prescriber">New prescription</NavLink>: Prescriber enters a prescription and sees safety alerts.</li>
+    <li><NavLink href="pharmacist">Review queue</NavLink>: Pharmacist approves, rejects, or overrides flagged prescriptions.</li>
+</ul>
+
+@code {
+    protected override void OnInitialized() => User.Changed += OnUserChanged;
+
+    private void OnUserChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => User.Changed -= OnUserChanged;
+}
