@@ -42,3 +42,21 @@ public class AuditRow
     public string Detail { get; set; } = string.Empty;
 }
 
+public class PrescriptionRow
+{
+    public int Id { get; set; }
+    public int PatientId { get; set; }
+    public string DrugName { get; set; } = string.Empty;
+    public DoseUnit DoseUnit { get; set; }
+    public decimal DoseAmount { get; set; }
+    public int Frequency { get; set; }
+    public string Route { get; set; } = string.Empty;
+    public string Duration { get; set; } = string.Empty;
+    public Severity Outcome { get; set; }
+    public string AlertsJson { get; set; } = "[]";   // the alerts raised, stored as JSON text
+    public string Status { get; set; } = "Submitted";
+    public string? OverrideReason { get; set; }
+    public string? RejectionReason { get; set; }
+    public DateTime SubmittedAt { get; set; }
+    public DateTime? ReviewedAt { get; set; }
+}
