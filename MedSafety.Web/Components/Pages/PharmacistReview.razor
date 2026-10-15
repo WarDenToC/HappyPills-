@@ -1,64 +1,96 @@
 @page "/pharmacist"
 @using MedSafety.Core.Enum
-@using MedSafety.Web.Services
-@inject PrescriptionStore Store
+@inject PrescriptionWorkflow Workflow
+@inject AuthorizationService Auth
+@inject CurrentUser User
 
 <PageTitle>Review queue — MedSafety</PageTitle>
 
 <h3>Review queue</h3>
 
-@if (!AccessControlService.CanPerform(UserRole.Pharmacist, "ReviewPrescription"))
+@if (!allowed)
 {
-    <div class="alert alert-danger">AccessDenied — this view requires the Pharmacist role.</div>
+    <AccessDenied Required="Pharmacist"/>
 }
 else
 {
-    @foreach (var rx in Store.All.Where(r => r.Status == "Submitted"))
+    @if (Pending.Count == 0)
     {
-        <div class="card mb-3 p-3">
-            <strong>@rx.Patient.Firstname @rx.Patient.Lastname</strong> — @rx.Prescription.DrugName
-            @rx.Prescription.DoseAmount@rx.Prescription.DoseUnit
-            <span class="badge bg-secondary ms-2">@rx.SafetyResult.Outcome</span>
+        <p class="text-muted">No prescriptions are waiting for review.</p>
+    }
 
-            @foreach (var alert in rx.SafetyResult.Alerts)
-            {
-                <div class="small text-muted">@alert.RuleType: @alert.Message</div>
-            }
+    @foreach (var rx in Pending)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>RX-@rx.Id</strong>: @rx.Patient.Firstname @rx.Patient.Lastname<br/>
+                        @rx.Prescription.DrugName @rx.Prescription.DoseAmount@rx.Prescription.DoseUnit,
+                        @rx.Prescription.Frequency× daily, @rx.Prescription.Route, @rx.Prescription.Duration
+                    </div>
+                    <SeverityBadge Value="rx.SafetyResult.Outcome"/>
+                </div>
 
-            @if (rx.SafetyResult.Outcome == Severity.Critical)
-            {
-                <textarea class="form-control mt-2" placeholder="Override reason (required for Critical)" @bind="overrideReasons[rx.Id]"></textarea>
-                <button class="btn btn-sm btn-primary mt-2" @onclick='() => Decide(rx.Id, "Approved")'>Override &amp; approve</button>
-            }
-            else
-            {
-                <button class="btn btn-sm btn-success mt-2" @onclick='() => Decide(rx.Id, "Approved")'>Approve</button>
-            }
-            <button class="btn btn-sm btn-danger mt-2" @onclick='() => Decide(rx.Id, "Rejected")'>Reject</button>
+                <div class="mt-3">
+                    @foreach (var alert in rx.SafetyResult.Alerts)
+                    {
+                        <AlertCard Item="alert"/>
+                    }
+                </div>
 
-            @if (errors.TryGetValue(rx.Id, out var err))
-            {
-                <div class="text-danger small mt-1">@err</div>
-            }
+                <label class="form-label mt-2" for="reason-@rx.Id">
+                    @(rx.SafetyResult.Outcome == Severity.Critical
+                        ? "Reason (required to override and approve, or to reject)"
+                        : "Reason (required to reject)")
+                </label>
+                <textarea id="reason-@rx.Id" class="form-control" rows="2"
+                          value="@GetReason(rx.Id)" @oninput="e => SetReason(rx.Id, e.Value?.ToString())"></textarea>
+
+                <div class="mt-2">
+                    <button class="btn btn-success btn-sm" @onclick='() => Decide(rx.Id, "Approved")'>
+                        @(rx.SafetyResult.Outcome == Severity.Critical ? "Override and approve" : "Approve")
+                    </button>
+                    <button class="btn btn-danger btn-sm ms-2" @onclick='() => Decide(rx.Id, "Rejected")'>Reject</button>
+                </div>
+
+                @if (errors.TryGetValue(rx.Id, out var err))
+                {
+                    <div class="text-danger small mt-1" role="alert">@err</div>
+                }
+            </div>
         </div>
     }
 }
 
 @code {
-    private Dictionary<int, string?> overrideReasons = new();
-    private Dictionary<int, string> errors = new();
+    private bool allowed;
+    private readonly Dictionary<int, string> reasons = new();
+    private readonly Dictionary<int, string> errors = new();
+
+    private List<PrescriptionRecord> Pending =>
+        Workflow.All.Where(r => r.Status == "Submitted").ToList();
+
+    protected override void OnInitialized()
+    {
+        allowed = Auth.Authorize(User.Name, User.Role, Permission.ReviewPrescription);
+    }
+
+    private string GetReason(int id) => reasons.TryGetValue(id, out var r) ? r : "";
+
+    private void SetReason(int id, string? value) => reasons[id] = value ?? "";
 
     private void Decide(int id, string decision)
     {
-        overrideReasons.TryGetValue(id, out var reason);
-        var (success, error) = Store.Decide(id, decision, reason);
-        if (!success && error is not null)
+        var (success, error) = Workflow.Review(User.Name, User.Role, id, decision, GetReason(id));
+        if (success)
         {
-            errors[id] = error;
+            errors.Remove(id);
+            reasons.Remove(id);
         }
         else
         {
-            errors.Remove(id);
+            errors[id] = error ?? "Unable to record the decision.";
         }
     }
 }

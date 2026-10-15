@@ -1,0 +1,19 @@
+@using MedSafety.Core.Enum
+
+<span class="severity-badge @CssClass" title="Severity: @Value">
+    <span aria-hidden="true">@Icon</span> @Value
+</span>
+
+@code {
+    [Parameter, EditorRequired] public Severity Value { get; set; }
+
+    private string CssClass => "sev-" + Value.ToString().ToLowerInvariant();
+
+    private string Icon => Value switch
+    {
+        Severity.Critical => "⛔",
+        Severity.Medium => "⚠",
+        Severity.Low => "ℹ",
+        _ => "✔"
+    };
+}

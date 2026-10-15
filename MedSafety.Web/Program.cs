@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<MedSafety.Web.Services.CurrentUser>();
 builder.Services.AddSingleton<MedSafety.Web.Services.PrescriptionStore>();
+builder.Services.AddSingleton<MedSafety.Web.Services.PrescriptionWorkflow>();
 
 // SQLite data layer: formulary, patients and audit log are stored in medsafety.db
 builder.Services.AddDbContextFactory<MedSafetyDbContext>(o => o.UseSqlite("Data Source=medsafety.db"));

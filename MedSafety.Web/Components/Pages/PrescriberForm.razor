@@ -2,89 +2,125 @@
 @using MedSafety.Core
 @using MedSafety.Core.Enum
 @using MedSafety.Core.Models
+@using MedSafety.Core.Models.FormularyTable
 @using MedSafety.Core.Rules
-@using MedSafety.Web.Services
-@inject PrescriptionStore Store
+@using MedSafety.Data
+@inject PrescriptionWorkflow Workflow
+@inject SqliteReferenceData RefData
+@inject AuthorizationService Auth
+@inject CurrentUser User
 
 <PageTitle>New prescription — MedSafety</PageTitle>
 
 <h3>New prescription</h3>
-<p class="text-muted">Synthetic data only — prototype, not for clinical use.</p>
 
-<div class="mb-2">
-    <label>Patient</label>
-    <select class="form-control" @bind="selectedPatientId">
-        <option value="0">Select a patient…</option>
-        @foreach (var p in SampleData.Patients)
-        {
-            <option value="@p.PatientId">@p.Firstname @p.Lastname</option>
-        }
-    </select>
-</div>
-<div class="mb-2">
-    <label>Drug</label>
-    <select class="form-control" @bind="drugName">
-        <option value="">Select a drug…</option>
-        @foreach (var d in SampleData.Formulary.Entries)
-        {
-            <option value="@d.DrugName">@d.DrugName (@d.DrugClass)</option>
-        }
-    </select>
-</div>
-<div class="mb-2">
-    <label>Dose amount</label>
-    <input class="form-control" type="number" @bind="doseAmount" />
-</div>
-<div class="mb-2">
-    <label>Dose unit</label>
-    <select class="form-control" @bind="doseUnit">
-        <option value="@DoseUnit.Mg">mg</option>
-        <option value="@DoseUnit.G">g</option>
-    </select>
-</div>
-<div class="mb-2">
-    <label>Frequency (times per day)</label>
-    <input class="form-control" type="number" @bind="frequency" />
-</div>
-<div class="mb-2">
-    <label>Route</label>
-    <input class="form-control" @bind="route" />
-</div>
-<div class="mb-2">
-    <label>Duration</label>
-    <input class="form-control" @bind="duration" />
-</div>
-
-<button class="btn btn-primary" @onclick="HandleSubmit">Submit prescription</button>
-
-@if (validationErrors.Any())
+@if (!allowed)
 {
-    <div class="alert alert-danger mt-3">
-        <strong>Rejected (FR2) — missing or invalid fields:</strong>
-        <ul>@foreach (var e in validationErrors) { <li>@e</li> }</ul>
-    </div>
+    <AccessDenied Required="Prescriber"/>
 }
-
-@if (lastResult is not null)
+else
 {
-    <div class="mt-4">
-        <h4>Safety check result — outcome: @lastResult.Outcome</h4>
-        @if (!lastResult.Alerts.Any())
-        {
-            <div class="alert alert-success">No rules violated.</div>
-        }
-        @foreach (var alert in lastResult.Alerts)
-        {
-            <div class="alert @(alert.Severity == Severity.Critical ? "alert-danger" : alert.Severity == Severity.Medium ? "alert-warning" : "alert-secondary")">
-                <strong>@alert.RuleType (@alert.Severity)</strong>
-                <p class="mb-0">@alert.Message</p>
-            </div>
-        }
-        <p class="text-success mt-2">Submitted to pharmacist review queue.</p>
+    <p class="text-muted">Fill in every field, then check the prescription. Alerts are shown before anything is sent to a pharmacist.</p>
+
+    <div class="mb-2">
+        <label for="patient" class="form-label">Patient</label>
+        <select id="patient" class="form-select" @bind="selectedPatientId" @bind:after="ClearCheck">
+            <option value="0">Select a patient…</option>
+            @foreach (var p in patients)
+            {
+                <option value="@p.PatientId">@p.Firstname @p.Lastname</option>
+            }
+        </select>
     </div>
+    <div class="mb-2">
+        <label for="drug" class="form-label">Drug</label>
+        <select id="drug" class="form-select" @bind="drugName" @bind:after="ClearCheck">
+            <option value="">Select a drug…</option>
+            @foreach (var d in formulary.Entries)
+            {
+                <option value="@d.DrugName">@d.DrugName (@d.DrugClass)</option>
+            }
+        </select>
+    </div>
+    <div class="mb-2">
+        <label for="dose" class="form-label">Dose amount</label>
+        <input id="dose" class="form-control" type="number" step="any" @bind="doseAmount" @bind:after="ClearCheck"/>
+    </div>
+    <div class="mb-2">
+        <label for="unit" class="form-label">Dose unit</label>
+        <select id="unit" class="form-select" @bind="doseUnit" @bind:after="ClearCheck">
+            <option value="@DoseUnit.Mg">mg</option>
+            <option value="@DoseUnit.G">g</option>
+        </select>
+    </div>
+    <div class="mb-2">
+        <label for="frequency" class="form-label">Frequency (times per day)</label>
+        <input id="frequency" class="form-control" type="number" @bind="frequency" @bind:after="ClearCheck"/>
+    </div>
+    <div class="mb-2">
+        <label for="route" class="form-label">Route</label>
+        <select id="route" class="form-select" @bind="route" @bind:after="ClearCheck">
+            <option value="">Select a route…</option>
+            <option>Oral</option>
+            <option>Injection</option>
+            <option>Topical</option>
+            <option>Intravenous</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="duration" class="form-label">Duration</label>
+        <input id="duration" class="form-control" @bind="duration" @bind:after="ClearCheck" placeholder="e.g. 7 days"/>
+    </div>
+
+    <button class="btn btn-primary" @onclick="Check">Check prescription</button>
+
+    @if (validationErrors.Any())
+    {
+        <div class="alert alert-danger mt-3" role="alert">
+            <strong>Rejected: missing or invalid fields</strong>
+            <ul class="mb-0">
+                @foreach (var e in validationErrors)
+                {
+                    <li>@e</li>
+                }
+            </ul>
+        </div>
+    }
+
+    @if (checkResult is not null)
+    {
+        <div class="mt-4">
+            <h4>Safety check <SeverityBadge Value="checkResult.Outcome"/></h4>
+
+            @if (!checkResult.Alerts.Any())
+            {
+                <div class="alert alert-success">No rules violated.</div>
+            }
+            @foreach (var alert in checkResult.Alerts)
+            {
+                <AlertCard Item="alert"/>
+            }
+
+            @if (submittedId is null)
+            {
+                <button class="btn btn-success mt-2" @onclick="Submit">Submit to pharmacist review</button>
+            }
+        </div>
+    }
+
+    @if (submittedId is not null)
+    {
+        <div class="alert alert-success mt-3" role="status">
+            Submitted as RX-@submittedId and sent to the pharmacist review queue.
+        </div>
+    }
 }
 
 @code {
+    private bool allowed;
+    private Formulary formulary = new();
+    private List<PatientContext> patients = new();
+
     private int selectedPatientId;
     private string drugName = "";
     private decimal doseAmount;
@@ -94,29 +130,56 @@
     private string duration = "";
 
     private List<string> validationErrors = new();
-    private SafetyCheckResult? lastResult;
+    private SafetyCheckResult? checkResult;
+    private Prescription? checkedRx;
+    private PatientContext? checkedPatient;
+    private int? submittedId;
 
-    private void HandleSubmit()
+    protected override void OnInitialized()
     {
+        allowed = Auth.Authorize(User.Name, User.Role, Permission.CreatePrescription);
+        if (!allowed) return;
+
+        formulary = RefData.LoadFormulary();
+        patients = RefData.LoadPatients();
+    }
+
+    // Any edit makes an earlier check out of date
+    private void ClearCheck()
+    {
+        checkResult = null;
+        checkedRx = null;
+        checkedPatient = null;
+        submittedId = null;
         validationErrors = new List<string>();
+    }
+
+    private void Check()
+    {
+        ClearCheck();
+
         if (selectedPatientId == 0) validationErrors.Add("Patient is required.");
 
         var rx = new Prescription(selectedPatientId, drugName, doseUnit, doseAmount, frequency, route, duration);
-        validationErrors.AddRange(PrescriptionValidator.Validate(rx, SampleData.Formulary));
+        validationErrors.AddRange(PrescriptionValidator.Validate(rx, formulary));
+        if (validationErrors.Any()) return;
 
-        if (validationErrors.Any())
-        {
-            lastResult = null;
-            return;
-        }
-
-        var patient = SampleData.Patients.First(p => p.PatientId == selectedPatientId);
+        var patient = patients.First(p => p.PatientId == selectedPatientId);
         var checker = new SafetyChecker(new IPrescriptionRule[]
         {
             new DoseRangeRule(), new AllergyRule(), new InteractionRule(), new DuplicateRule()
         });
 
-        lastResult = checker.RunChecks(rx, patient, SampleData.Formulary);
-        Store.Submit(rx, patient, lastResult);
+        checkResult = checker.RunChecks(rx, patient, formulary);
+        checkedRx = rx;
+        checkedPatient = patient;
+    }
+
+    private void Submit()
+    {
+        if (checkResult is null || checkedRx is null || checkedPatient is null) return;
+
+        var record = Workflow.Submit(User.Name, User.Role, checkedRx, checkedPatient, checkResult);
+        submittedId = record?.Id;
     }
 }

@@ -1,0 +1,13 @@
+@using MedSafety.Core.Models
+
+<div class="alert-card @SevClass">
+    <SeverityBadge Value="Item.Severity"/>
+    <strong class="ms-2">@Item.RuleType</strong>
+    <div class="alert-message">@Item.Message</div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public Alert Item { get; set; } = null!;
+
+    private string SevClass => "sev-" + Item.Severity.ToString().ToLowerInvariant();
+}

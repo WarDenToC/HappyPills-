@@ -1,0 +1,9 @@
+<div class="alert alert-danger" role="alert">
+    <span aria-hidden="true">⛔</span>
+    <strong>AccessDenied</strong>: this page requires the <strong>@Required</strong> role.
+    The attempt has been recorded in the audit log.
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Required { get; set; } = "";
+}

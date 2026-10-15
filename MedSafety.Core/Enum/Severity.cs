@@ -8,3 +8,4 @@ public enum Severity
     Medium = 2,
     Critical = 3,
 }
+

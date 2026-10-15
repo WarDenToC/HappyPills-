@@ -1,4 +1,5 @@
 using MedSafety.Core;
+using MedSafety.Core.Enum;
 using MedSafety.Core.Models;
 
 namespace MedSafety.Web.Services;
@@ -11,11 +12,11 @@ public class PrescriptionRecord
     public required SafetyCheckResult SafetyResult { get; init; }
     public string Status { get; set; } = "Submitted";
     public string? OverrideReason { get; set; }
+    public string? RejectionReason { get; set; }
     public DateTime SubmittedAt { get; init; } = DateTime.Now;
+    public DateTime? ReviewedAt { get; set; }
 }
 
-// In-memory stand-in for MedSafety.Data persistence. same public shape will
-// move behind an interface once EF Core/SQLite is ready.
 public class PrescriptionStore
 {
     private readonly List<PrescriptionRecord> _records = new();
@@ -36,24 +37,36 @@ public class PrescriptionStore
         return record;
     }
 
-    // FR9/FR10: Critical outcome cannot be approved without a recorded override reason.
-    public (bool Success, string? Error) Decide(int id, string decision, string? overrideReason)
+    // FR9/FR10: rejecting needs a reason; approving a Critical prescription needs an override reason.
+    public (bool Success, string? Error) Decide(int id, string decision, string? reason)
     {
         var record = _records.FirstOrDefault(r => r.Id == id);
         if (record is null) return (false, "Prescription not found.");
+        if (record.Status != "Submitted") return (false, "This prescription has already been reviewed.");
 
-        if (decision == "Approved" && record.SafetyResult.Outcome == Core.Enum.Severity.Critical)
+        switch (decision)
         {
-            if (string.IsNullOrWhiteSpace(overrideReason))
-            {
-                return (false, "A reason is required to override a Critical alert.");
-            }
-            record.OverrideReason = overrideReason;
-            record.Status = "Approved";
-            return (true, null);
+            case "Rejected":
+                if (string.IsNullOrWhiteSpace(reason))
+                    return (false, "A reason is required to reject a prescription.");
+                record.RejectionReason = reason.Trim();
+                break;
+
+            case "Approved":
+                if (record.SafetyResult.Outcome == Severity.Critical)
+                {
+                    if (string.IsNullOrWhiteSpace(reason))
+                        return (false, "A reason is required to override a Critical alert.");
+                    record.OverrideReason = reason.Trim();
+                }
+                break;
+
+            default:
+                return (false, $"Unknown decision: {decision}");
         }
 
         record.Status = decision;
+        record.ReviewedAt = DateTime.Now;
         return (true, null);
     }
 }
