@@ -7,33 +7,36 @@ namespace MedSafety.Tests;
 public class CurrentUserTests
 {
     [TestMethod]
-    public void NewUser_DefaultsToPrescriber()
+    public void NewUser_IsNotAuthenticated()
     {
-        Assert.AreEqual(Role.Prescriber, new CurrentUser().Role);
+        Assert.IsFalse(new CurrentUser().IsAuthenticated);
     }
 
     [TestMethod]
-    public void SwitchTo_DifferentRole_UpdatesRoleAndRaisesChanged()
+    public void SignIn_SetsRoleAndRaisesChanged()
     {
         var user = new CurrentUser();
         var raised = 0;
         user.Changed += () => raised++;
 
-        user.SwitchTo(Role.Pharmacist);
+        user.SignIn(Role.Pharmacist);
 
+        Assert.IsTrue(user.IsAuthenticated);
         Assert.AreEqual(Role.Pharmacist, user.Role);
         Assert.AreEqual(1, raised);
     }
 
     [TestMethod]
-    public void SwitchTo_SameRole_DoesNotRaiseChanged()
+    public void SignOut_ClearsAuthenticationAndRaisesChanged()
     {
         var user = new CurrentUser();
+        user.SignIn(Role.Administrator);
         var raised = 0;
         user.Changed += () => raised++;
 
-        user.SwitchTo(Role.Prescriber);
+        user.SignOut();
 
-        Assert.AreEqual(0, raised);
+        Assert.IsFalse(user.IsAuthenticated);
+        Assert.AreEqual(1, raised);
     }
-} 
+}

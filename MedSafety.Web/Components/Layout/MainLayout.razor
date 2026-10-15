@@ -1,29 +1,59 @@
 ﻿@inherits LayoutComponentBase
+@implements IDisposable
+@inject CurrentUser User
+@inject NavigationManager Navigation
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
+@if (User.IsAuthenticated)
+{
+    <div class="page">
+        <div class="sidebar">
+            <NavMenu/>
+        </div>
+
+        <main>
+            <div class="synthetic-banner" role="note">
+                <span aria-hidden="true">⚠</span>
+                <strong>Prototype using synthetic data — not for clinical use.</strong>
+                All drugs, patients and records shown are fictional.
+            </div>
+
+            <div class="top-row px-4">
+                <UserMenu/>
+            </div>
+
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
     </div>
-
-    <main>
-        <div class="synthetic-banner" role="note">
-            <span aria-hidden="true">⚠</span>
-            <strong>Prototype using synthetic data — not for clinical use.</strong>
-            All drugs, patients and records shown are fictional.
-        </div>
-
-        <div class="top-row px-4">
-            <RoleSwitcher/>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+}
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        User.Changed += OnUserChanged;
+        RedirectIfSignedOut();
+    }
+
+    private void OnUserChanged()
+    {
+        InvokeAsync(() =>
+        {
+            RedirectIfSignedOut();
+            StateHasChanged();
+        });
+    }
+
+    private void RedirectIfSignedOut()
+    {
+        if (!User.IsAuthenticated) Navigation.NavigateTo("/login");
+    }
+
+    public void Dispose() => User.Changed -= OnUserChanged;
+}

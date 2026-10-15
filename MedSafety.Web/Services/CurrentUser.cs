@@ -2,10 +2,12 @@ using MedSafety.Core.Security;
 
 namespace MedSafety.Web.Services;
 
-// Prototype stand-in for login: the role the demo user is currently acting as.
-// Scoped, so each browser session has its own role.
+// The signed-in user for this browser session (scoped per Blazor circuit).
 public class CurrentUser
 {
+    public bool IsAuthenticated { get; private set; }
+
+    // Only meaningful while IsAuthenticated is true
     public Role Role { get; private set; } = Role.Prescriber;
 
     public string Name => Role switch
@@ -18,10 +20,16 @@ public class CurrentUser
 
     public event Action? Changed;
 
-    public void SwitchTo(Role role)
+    public void SignIn(Role role)
     {
-        if (role == Role) return;
         Role = role;
+        IsAuthenticated = true;
+        Changed?.Invoke();
+    }
+
+    public void SignOut()
+    {
+        IsAuthenticated = false;
         Changed?.Invoke();
     }
 }

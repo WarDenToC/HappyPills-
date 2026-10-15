@@ -1,0 +1,15 @@
+@inject CurrentUser User
+@inject LoginService Login
+
+<div class="user-menu">
+    <span class="me-3">Signed in as <strong>@User.Name</strong> (@User.Role)</span>
+    <button class="btn btn-outline-secondary btn-sm" @onclick="SignOut">Log out</button>
+</div>
+
+@code {
+    private void SignOut()
+    {
+        Login.LogOut(User.Name, User.Role);
+        User.SignOut();
+    }
+}

@@ -1,0 +1,96 @@
+@page "/login"
+@layout MedSafety.Web.Components.Layout.LoginLayout
+@inject CurrentUser User
+@inject LoginService LoginAuth
+@inject NavigationManager Navigation
+
+<PageTitle>Sign in — MedSafety</PageTitle>
+
+<div class="card login-card">
+    <div class="card-body">
+        <h1 class="h4">MedSafety</h1>
+        <p class="text-muted">Prescription safety and review prototype. Select who you are to sign in.</p>
+
+        <form @onsubmit="SignIn">
+            <div class="mb-3">
+                <label for="login-role" class="form-label">I am a</label>
+                <select id="login-role" class="form-select" value="@selectedRole.ToString()" @onchange="OnRoleChanged">
+                    @foreach (var role in Enum.GetValues<Role>())
+                    {
+                        <option value="@role">@RoleLabel(role)</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="login-username" class="form-label">Username</label>
+                <input id="login-username" class="form-control" value="@username" readonly/>
+            </div>
+
+            <div class="mb-1">
+                <label for="login-password" class="form-label">Password</label>
+                <input id="login-password" class="form-control" type="password" autocomplete="off"
+                       @bind="password" @bind:event="oninput"/>
+            </div>
+            <div class="form-text mb-3">The password is 'password' for all selected roles.</div>
+
+            @if (error is not null)
+            {
+                <div class="alert alert-danger" role="alert">@error</div>
+            }
+
+            <button type="submit" class="btn btn-primary w-100">Sign in</button>
+        </form>
+    </div>
+</div>
+
+@code {
+    private Role selectedRole = Role.Prescriber;
+    private string username = LoginService.UsernameFor(Role.Prescriber);
+    private string password = "";
+    private string? error;
+
+    protected override void OnInitialized()
+    {
+        if (User.IsAuthenticated) Navigation.NavigateTo("/");
+    }
+
+    private static string RoleLabel(Role role) => role switch
+    {
+        Role.Administrator => "Administrator",
+        _ => role.ToString()
+    };
+
+    private static string HomeFor(Role role) => role switch
+    {
+        Role.Prescriber => "/prescriber",
+        Role.Pharmacist => "/pharmacist",
+        Role.Administrator => "/dashboard",
+        _ => "/"
+    };
+
+    private void OnRoleChanged(ChangeEventArgs e)
+    {
+        if (Enum.TryParse<Role>(e.Value?.ToString(), out var role))
+        {
+            selectedRole = role;
+            username = LoginService.UsernameFor(role);
+            password = "";
+            error = null;
+        }
+    }
+
+    private void SignIn()
+    {
+        if (LoginAuth.TryLogin(selectedRole, username, password))
+        {
+            User.SignIn(selectedRole);
+            Navigation.NavigateTo(HomeFor(selectedRole));
+        }
+        else
+        {
+            error = "Incorrect password. The password is 'password'.";
+            password = "";
+        }
+    }
+}
