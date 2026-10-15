@@ -1,0 +1,80 @@
+@page "/audit"
+@using MedSafety.Core.Audit
+@inject IAuditLog Audit
+@inject AuthorizationService Auth
+@inject CurrentUser User
+
+<PageTitle>Audit log — MedSafety</PageTitle>
+
+<h3>Audit log</h3>
+
+@if (!allowed)
+{
+    <AccessDenied Required="Administrator"/>
+}
+else
+{
+    <div class="d-flex align-items-end gap-3 mb-3">
+        <div>
+            <label for="a-action" class="form-label">Action</label>
+            <select id="a-action" class="form-select" @bind="actionFilter">
+                <option value="">All actions</option>
+                @foreach (var a in entries.Select(e => e.Action).Distinct().OrderBy(a => a))
+                {
+                    <option>@a</option>
+                }
+            </select>
+        </div>
+        <button class="btn btn-outline-secondary" @onclick="Refresh">Refresh</button>
+    </div>
+
+    <p class="text-muted" role="status">Showing @Filtered.Count of @entries.Count entries (newest first).</p>
+
+    <div class="table-responsive">
+        <table class="table table-sm align-middle">
+            <caption class="visually-hidden">Audit log entries</caption>
+            <thead>
+            <tr>
+                <th scope="col">Time</th>
+                <th scope="col">Actor</th>
+                <th scope="col">Role</th>
+                <th scope="col">Action</th>
+                <th scope="col">Detail</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var e in Filtered)
+            {
+                <tr>
+                    <td>@e.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    <td>@e.Actor</td>
+                    <td>@e.Role</td>
+                    <td class="@(IsDenial(e) ? "text-danger fw-semibold" : "")">
+                        @if (IsDenial(e)) { <span aria-hidden="true">⛔ </span> }@e.Action
+                    </td>
+                    <td>@e.Detail</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private bool allowed;
+    private List<AuditEntry> entries = new();
+    private string actionFilter = "";
+
+    protected override void OnInitialized()
+    {
+        allowed = Auth.Authorize(User.Name, User.Role, Permission.ViewDashboard);
+        if (allowed) Refresh();
+    }
+
+    private void Refresh() => entries = Audit.GetAll().Reverse().ToList();
+
+    private List<AuditEntry> Filtered =>
+        string.IsNullOrEmpty(actionFilter) ? entries : entries.Where(e => e.Action == actionFilter).ToList();
+
+    private static bool IsDenial(AuditEntry e) => e.Action is "AccessDenied" or "LoginFailed";
+}

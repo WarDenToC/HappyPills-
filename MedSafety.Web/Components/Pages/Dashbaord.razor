@@ -1,0 +1,101 @@
+@page "/dashboard"
+@using System.Diagnostics
+@using MedSafety.Core.Enum
+@inject PrescriptionWorkflow Workflow
+@inject AuthorizationService Auth
+@inject CurrentUser User
+
+<PageTitle>Dashboard — MedSafety</PageTitle>
+
+<h3>Quality dashboard</h3>
+
+@if (!allowed)
+{
+    <AccessDenied Required="Administrator"/>
+}
+else if (summary is not null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted small" role="status">Calculated in @elapsedMs.ToString("F1") ms (NFR2 target: under 3000 ms)</span>
+        <button class="btn btn-outline-secondary btn-sm" @onclick="Refresh">Refresh</button>
+    </div>
+
+    <div class="metric-grid">
+        <div class="metric-card"><div class="metric-value">@summary.Total</div><div class="metric-label">Prescriptions</div></div>
+        <div class="metric-card"><div class="metric-value">@summary.Pending</div><div class="metric-label">Awaiting review</div></div>
+        <div class="metric-card"><div class="metric-value">@summary.Approved</div><div class="metric-label">Approved</div></div>
+        <div class="metric-card"><div class="metric-value">@summary.Overridden</div><div class="metric-label">Approved by override</div></div>
+        <div class="metric-card"><div class="metric-value">@summary.Rejected</div><div class="metric-label">Rejected</div></div>
+        <div class="metric-card"><div class="metric-value">@summary.TotalAlerts</div><div class="metric-label">Alerts raised</div></div>
+        <div class="metric-card"><div class="metric-value">@summary.OverrideRatePercent.ToString("F0")%</div><div class="metric-label">Override rate (of reviewed)</div></div>
+        <div class="metric-card"><div class="metric-value">@AverageText</div><div class="metric-label">Average review time</div></div>
+    </div>
+
+    <h4 class="h5">Alerts by type and severity</h4>
+    <table class="table table-sm w-auto">
+        <caption class="visually-hidden">Alert counts by rule type and severity</caption>
+        <thead>
+        <tr>
+            <th scope="col">Rule</th>
+            <th scope="col"><SeverityBadge Value="Severity.Low"/></th>
+            <th scope="col"><SeverityBadge Value="Severity.Medium"/></th>
+            <th scope="col"><SeverityBadge Value="Severity.Critical"/></th>
+            <th scope="col">Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var row in summary.AlertsByType)
+        {
+            <tr>
+                <th scope="row">@row.RuleType</th>
+                <td>@row.Low</td>
+                <td>@row.Medium</td>
+                <td>@row.Critical</td>
+                <td>@row.Total</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <h4 class="h5 mt-4">Rejection reasons</h4>
+    @if (summary.RejectionReasons.Count == 0)
+    {
+        <p class="text-muted">No prescriptions have been rejected yet.</p>
+    }
+    else
+    {
+        <table class="table table-sm w-auto">
+            <caption class="visually-hidden">Rejection reasons and counts</caption>
+            <thead><tr><th scope="col">Reason</th><th scope="col">Count</th></tr></thead>
+            <tbody>
+            @foreach (var reason in summary.RejectionReasons)
+            {
+                <tr><td>@reason.Reason</td><td>@reason.Count</td></tr>
+            }
+            </tbody>
+        </table>
+    }
+}
+
+@code {
+    private bool allowed;
+    private DashboardSummary? summary;
+    private double elapsedMs;
+
+    private string AverageText =>
+        summary?.AverageReviewMinutes is null ? "n/a" : $"{summary.AverageReviewMinutes:F1} min";
+
+    protected override void OnInitialized()
+    {
+        allowed = Auth.Authorize(User.Name, User.Role, Permission.ViewDashboard);
+        if (allowed) Refresh();
+    }
+
+    private void Refresh()
+    {
+        var sw = Stopwatch.StartNew();
+        summary = DashboardMetrics.Calculate(Workflow.All);
+        sw.Stop();
+        elapsedMs = sw.Elapsed.TotalMilliseconds;
+    }
+}

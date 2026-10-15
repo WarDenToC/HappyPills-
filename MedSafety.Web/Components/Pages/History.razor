@@ -1,0 +1,120 @@
+@page "/history"
+@using MedSafety.Core.Enum
+@inject PrescriptionWorkflow Workflow
+@inject AuthorizationService Auth
+@inject CurrentUser User
+
+<PageTitle>History — MedSafety</PageTitle>
+
+<h3>Prescription history</h3>
+
+@if (!allowed)
+{
+    <AccessDenied Required="Pharmacist"/>
+}
+else
+{
+    <div class="row g-2 mb-3">
+        <div class="col-md-3">
+            <label for="f-patient" class="form-label">Patient</label>
+            <input id="f-patient" class="form-control" placeholder="Name contains…" @bind="patient" @bind:event="oninput"/>
+        </div>
+        <div class="col-md-2">
+            <label for="f-status" class="form-label">Status</label>
+            <select id="f-status" class="form-select" @bind="status">
+                <option value="">All</option>
+                <option>Submitted</option>
+                <option>Approved</option>
+                <option>Overridden</option>
+                <option>Rejected</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="f-severity" class="form-label">Alert severity</label>
+            <select id="f-severity" class="form-select" @bind="severity">
+                <option value="">All</option>
+                <option>Critical</option>
+                <option>Medium</option>
+                <option>Low</option>
+                <option>None</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="f-from" class="form-label">From date</label>
+            <input id="f-from" type="date" class="form-control" @bind="fromDate"/>
+        </div>
+        <div class="col-md-2">
+            <label for="f-to" class="form-label">To date</label>
+            <input id="f-to" type="date" class="form-control" @bind="toDate"/>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button class="btn btn-outline-secondary" @onclick="Clear">Clear</button>
+        </div>
+    </div>
+
+    <p class="text-muted" role="status">Showing @Results.Count of @Workflow.All.Count prescriptions.</p>
+
+    <div class="table-responsive">
+        <table class="table table-sm align-middle">
+            <caption class="visually-hidden">Prescription history</caption>
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Submitted</th>
+                <th scope="col">Patient</th>
+                <th scope="col">Prescription</th>
+                <th scope="col">Alert severity</th>
+                <th scope="col">Status</th>
+                <th scope="col">Reason</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var r in Results)
+            {
+                <tr>
+                    <td>RX-@r.Id</td>
+                    <td>@r.SubmittedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@r.Patient.Firstname @r.Patient.Lastname</td>
+                    <td>@r.Prescription.DrugName @r.Prescription.DoseAmount@r.Prescription.DoseUnit</td>
+                    <td><SeverityBadge Value="r.SafetyResult.Outcome"/></td>
+                    <td>@StatusLabel(r)</td>
+                    <td>@(r.OverrideReason ?? r.RejectionReason)</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private bool allowed;
+    private string patient = "";
+    private string status = "";
+    private string severity = "";
+    private DateTime? fromDate;
+    private DateTime? toDate;
+
+    protected override void OnInitialized()
+    {
+        allowed = Auth.Authorize(User.Name, User.Role, Permission.ReviewPrescription);
+    }
+
+    private List<PrescriptionRecord> Results =>
+        PrescriptionSearch.Apply(Workflow.All,
+            new PrescriptionFilter(patient, status, ParseSeverity(), fromDate, toDate));
+
+    private Severity? ParseSeverity() =>
+        System.Enum.TryParse<Severity>(severity, out var s) ? s : null;
+
+    private static string StatusLabel(PrescriptionRecord r) =>
+        r.Status == "Approved" && r.OverrideReason is not null ? "Overridden" : r.Status;
+
+    private void Clear()
+    {
+        patient = "";
+        status = "";
+        severity = "";
+        fromDate = null;
+        toDate = null;
+    }
+}
